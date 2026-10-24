@@ -1,0 +1,186 @@
+{
+  "timestamp": "2026-10-24T01:01:16.804199+00:00",
+  "base_url": "http://127.0.0.1:8766",
+  "checks": [
+    {
+      "name": "health",
+      "passed": true,
+      "detail": {
+        "status": "ok",
+        "model": "qwen3:8b",
+        "model_available": true,
+        "embedding_model": "qwen3-embedding:0.6b",
+        "embedding_available": true,
+        "mode": "llm",
+        "source_count": 10,
+        "chunk_count": 343,
+        "demo_mode": true,
+        "indexing": {
+          "running": false,
+          "message": ""
+        }
+      }
+    },
+    {
+      "name": "frontend production HTML",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unauthenticated sources denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "demo employee login",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "sources seeded",
+      "passed": true,
+      "detail": 10
+    },
+    {
+      "name": "templates seeded",
+      "passed": true,
+      "detail": 7
+    },
+    {
+      "name": "admin audit denied",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "chat and grounded answer",
+      "passed": true,
+      "detail": {
+        "status": "grounded",
+        "mode": "llm",
+        "elapsed_ms": 3230
+      }
+    },
+    {
+      "name": "chat registration citation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "authenticated original PDF",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "draft creation",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "draft DOCX export",
+      "passed": true,
+      "detail": {
+        "bytes": 28310,
+        "incomplete": "true"
+      }
+    },
+    {
+      "name": "export preserved Word content",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unsupported question refused",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "compose configuration valid",
+      "passed": true,
+      "detail": "docker compose config --quiet; ALLOWED_ORIGINS and COOKIE_SECURE passed through"
+    },
+    {
+      "name": "container least privileges",
+      "passed": true,
+      "detail": "UID/GID 10001, privileged=false, cap-drop ALL"
+    },
+    {
+      "name": "Docker healthcheck",
+      "passed": true,
+      "detail": "healthy"
+    },
+    {
+      "name": "pypdf patched version",
+      "passed": true,
+      "detail": "6.21.2 verified inside final image"
+    },
+    {
+      "name": "accounts CLI available",
+      "passed": true,
+      "detail": "--help and list succeeded; no hashes/passwords displayed"
+    },
+    {
+      "name": "offline model fallback",
+      "passed": true,
+      "detail": {
+        "http": 200,
+        "mode": "extractive",
+        "status": "grounded",
+        "citations": 3,
+        "section": "п. 5.6",
+        "page": 16,
+        "method": "Separate ASGI process inside same final image, Ollama endpoint http://127.0.0.1:9"
+      }
+    },
+    {
+      "name": "data survives container restart",
+      "passed": true,
+      "detail": {
+        "draft_id": "69d408603a562cc2adae9bb6",
+        "sources": 10
+      }
+    }
+  ],
+  "health": {
+    "status": "ok",
+    "model": "qwen3:8b",
+    "model_available": true,
+    "embedding_model": "qwen3-embedding:0.6b",
+    "embedding_available": true,
+    "mode": "llm",
+    "source_count": 10,
+    "chunk_count": 343,
+    "demo_mode": true,
+    "indexing": {
+      "running": false,
+      "message": ""
+    }
+  },
+  "answer": {
+    "status": "grounded",
+    "mode": "llm",
+    "elapsed_ms": 3230
+  },
+  "draft_id": "69d408603a562cc2adae9bb6",
+  "image": {
+    "tag": "regula-hackathon:local",
+    "digest": "sha256:7a5eb3caf755ce481e30131228aefad6f5c985ec2dec6f60ef946231fceb5c86"
+  },
+  "container": {
+    "name": "regula-qa",
+    "port": "127.0.0.1:8766",
+    "volume": "regula-qa-data",
+    "uid": 10001,
+    "gid": 10001,
+    "privileged": false,
+    "cap_drop": [
+      "ALL"
+    ],
+    "final_state": "exited"
+  },
+  "dependencies": {
+    "pypdf": "6.21.2"
+  },
+  "all_passed": true,
+  "total_checks": 21,
+  "cold_start_evaluation": "output/evaluation-docker.json"
+}

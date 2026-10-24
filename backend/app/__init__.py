@@ -1,0 +1,1 @@
+"""Local document assistant services."""

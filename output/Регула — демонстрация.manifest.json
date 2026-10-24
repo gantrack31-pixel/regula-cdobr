@@ -1,0 +1,207 @@
+{
+  "created_at": "2026-10-24T00:47:49.287587+00:00",
+  "output": "C:\\Users\\GT\\Documents\\ChatGPT\\ХАК ДГТУ 2026 осень\\output\\Регула — демонстрация.mp4",
+  "size_bytes": 6682352,
+  "width": 1280,
+  "height": 840,
+  "fps": 24,
+  "duration_seconds": 117.0,
+  "frames_decoded": 2808,
+  "audio_streams": 0,
+  "description": "Обзор по реальным экранам приложения; не непрерывная видеозапись.",
+  "sources": [
+    {
+      "filename": "home.png",
+      "sha256": "6c9f00a1ee7e4f133f3d928558646762e969afdbd506ef346674007e0288adb0",
+      "original_size": [
+        1280,
+        720
+      ],
+      "title": "Одно рабочее пространство",
+      "caption": "Ответы по регламентам, подготовка проектов, проверка и база знаний."
+    },
+    {
+      "filename": "answer.png",
+      "sha256": "ebab8f58e7172922e896c4e301dfad2985e204fba597fc307da7d84b89016670",
+      "original_size": [
+        1280,
+        720
+      ],
+      "title": "Ответ можно проверить",
+      "caption": "Норма о регистрации: пункт 5.6, страница 16, дословная цитата и исходник."
+    },
+    {
+      "filename": "followup.png",
+      "sha256": "05424d17104c29a16843e77df147f24e27dad7bb495af3f57b639c602261b234",
+      "original_size": [
+        1280,
+        720
+      ],
+      "title": "Диалог сохраняет контекст",
+      "caption": "Уточнение продолжается в том же диалоге. Ответ опирается на доступные материалы."
+    },
+    {
+      "filename": "library.png",
+      "sha256": "af6b1ea6ac8d381a394d74f0669554c61eee8ddc3e6d772d8e9ea7cae778796b",
+      "original_size": [
+        1274,
+        717
+      ],
+      "title": "Семь модулей организаторов",
+      "caption": "Выбор проекта с готовой структурой и полями для конкретной задачи."
+    },
+    {
+      "filename": "documents.png",
+      "sha256": "b942715d3ce0c2bfe23d89d710e78dbedbabe049324ecefb2dc3e6743b11c956",
+      "original_size": [
+        1274,
+        717
+      ],
+      "title": "От данных к проекту DOCX",
+      "caption": "Обязательные поля, предупреждения и предпросмотр. Номер и подпись не выдумываются."
+    },
+    {
+      "filename": "route.png",
+      "sha256": "29f80aa166b08c7069ecf70b11bd03f2481fdae049ed6bdd465111f590b5e075",
+      "original_size": [
+        1274,
+        717
+      ],
+      "title": "Обязательные визы с основаниями",
+      "caption": "Маршрут учитывает тип документа, содержание, ИТ и изменение прав доступа."
+    },
+    {
+      "filename": "review.png",
+      "sha256": "07d7af636010eaa30d916bd740b61590a2d70fa656c25623da83af8818e450be",
+      "original_size": [
+        1274,
+        717
+      ],
+      "title": "Ошибки видны до согласования",
+      "caption": "В этом проекте — 2 ошибки и 2 вопроса для проверки. Замечания связаны с нормами."
+    },
+    {
+      "filename": "upload.png",
+      "sha256": "90ef51ca511de5078a35d920ef72db1a59b61bd7bee0108277f0812147e8d557",
+      "original_size": [
+        1280,
+        720
+      ],
+      "title": "Куратор добавляет новый источник",
+      "caption": "PDF, DOCX, TXT и MD. Уровень доступа и черновая редакция до активации."
+    },
+    {
+      "filename": "knowledge.png",
+      "sha256": "bb544a0fa470c7613036cb937eca5f73ffb4116a72bd42d6bf676212cbf3e6d0",
+      "original_size": [
+        1280,
+        720
+      ],
+      "title": "База знаний под контролем",
+      "caption": "Исходники, версии и доступ. Активная учебная редакция обозначена явно."
+    },
+    {
+      "filename": "versions.png",
+      "sha256": "02c608a27fdb64c8becfb0dbbf65f19eae83114c1800210f2ac51f0385d8762d",
+      "original_size": [
+        1280,
+        720
+      ],
+      "title": "Изменения можно сравнить",
+      "caption": "До активации видны добавленные и удалённые фрагменты. История сохраняется."
+    },
+    {
+      "filename": "newmodule.png",
+      "sha256": "627f597ed32b8c12f11df62c955b41c67748a6cc8a6d7c95e734d2dea73f329b",
+      "original_size": [
+        1274,
+        717
+      ],
+      "title": "Новый модуль становится формой",
+      "caption": "Шаблон с именованными полями становится конструктором без переобучения модели."
+    },
+    {
+      "filename": "audit.png",
+      "sha256": "4e74ee2021913fb285369f3c3428ad313bd86d3c5a65d663b36831476e452ace",
+      "original_size": [
+        1274,
+        717
+      ],
+      "title": "Значимые действия остаются в журнале",
+      "caption": "Кто загрузил источник, активировал редакцию или создал проект. Доступ администратора."
+    }
+  ],
+  "timeline": [
+    {
+      "name": "intro",
+      "start_seconds": 0.0,
+      "duration_seconds": 4.0
+    },
+    {
+      "name": "home",
+      "start_seconds": 4.0,
+      "duration_seconds": 9.0
+    },
+    {
+      "name": "answer",
+      "start_seconds": 13.0,
+      "duration_seconds": 9.0
+    },
+    {
+      "name": "followup",
+      "start_seconds": 22.0,
+      "duration_seconds": 9.0
+    },
+    {
+      "name": "library",
+      "start_seconds": 31.0,
+      "duration_seconds": 9.0
+    },
+    {
+      "name": "documents",
+      "start_seconds": 40.0,
+      "duration_seconds": 9.0
+    },
+    {
+      "name": "route",
+      "start_seconds": 49.0,
+      "duration_seconds": 9.0
+    },
+    {
+      "name": "review",
+      "start_seconds": 58.0,
+      "duration_seconds": 9.0
+    },
+    {
+      "name": "upload",
+      "start_seconds": 67.0,
+      "duration_seconds": 9.0
+    },
+    {
+      "name": "knowledge",
+      "start_seconds": 76.0,
+      "duration_seconds": 9.0
+    },
+    {
+      "name": "versions",
+      "start_seconds": 85.0,
+      "duration_seconds": 9.0
+    },
+    {
+      "name": "newmodule",
+      "start_seconds": 94.0,
+      "duration_seconds": 9.0
+    },
+    {
+      "name": "audit",
+      "start_seconds": 103.0,
+      "duration_seconds": 9.0
+    },
+    {
+      "name": "outro",
+      "start_seconds": 112.0,
+      "duration_seconds": 5.0
+    }
+  ],
+  "qa_frames": "C:\\Users\\GT\\Documents\\ChatGPT\\ХАК ДГТУ 2026 осень\\tmp\\demo\\video_qa"
+}

@@ -1,0 +1,147 @@
+{
+  "native_original_chunks": 355,
+  "docker_original_chunks": 343,
+  "counts": {
+    "approval-matrix": {
+      "native": 11,
+      "docker": 11
+    },
+    "instruction": {
+      "native": 300,
+      "docker": 288
+    },
+    "module-guidance": {
+      "native": 17,
+      "docker": 17
+    },
+    "template-3": {
+      "native": 6,
+      "docker": 6
+    },
+    "template-4": {
+      "native": 3,
+      "docker": 3
+    },
+    "template-5": {
+      "native": 4,
+      "docker": 4
+    },
+    "template-6": {
+      "native": 3,
+      "docker": 3
+    },
+    "template-7": {
+      "native": 3,
+      "docker": 3
+    },
+    "template-8": {
+      "native": 5,
+      "docker": 5
+    },
+    "template-9": {
+      "native": 3,
+      "docker": 3
+    }
+  },
+  "native_only": [
+    {
+      "document_id": "instruction",
+      "section": "Общие положения",
+      "page": 2,
+      "text": "Глава 1. Предмет регулирования и общие положения",
+      "context": "",
+      "multiplicity": 1
+    },
+    {
+      "document_id": "instruction",
+      "section": "п. 1.14",
+      "page": 6,
+      "text": "Глава 2. Система организации документационного обеспечения\nуправления",
+      "context": "",
+      "multiplicity": 1
+    },
+    {
+      "document_id": "instruction",
+      "section": "п. 2.13",
+      "page": 9,
+      "text": "Глава 3. Классификация документов и основные правила\nдокументооборота",
+      "context": "",
+      "multiplicity": 1
+    },
+    {
+      "document_id": "instruction",
+      "section": "п. 3.4",
+      "page": 11,
+      "text": "Глава 4. Полномочия участников документооборота и функции в\nИИС ДО",
+      "context": "",
+      "multiplicity": 1
+    },
+    {
+      "document_id": "instruction",
+      "section": "п. 4.8",
+      "page": 14,
+      "text": "Глава 5. Прием, первичная обработка и регистрация входящих\nдокументов",
+      "context": "",
+      "multiplicity": 1
+    },
+    {
+      "document_id": "instruction",
+      "section": "п. 5.14",
+      "page": 19,
+      "text": "Глава 6. Организация контроля исполнения документов\n(поручений)",
+      "context": "",
+      "multiplicity": 1
+    },
+    {
+      "document_id": "instruction",
+      "section": "п. 6.15",
+      "page": 23,
+      "text": "Глава 7. Регистрация и направление исходящих документов\nОрганизации",
+      "context": "",
+      "multiplicity": 1
+    },
+    {
+      "document_id": "instruction",
+      "section": "п. 7.16",
+      "page": 26,
+      "text": "Глава 8. Требования к составу и оформлению реквизитов\nисходящих документов",
+      "context": "",
+      "multiplicity": 1
+    },
+    {
+      "document_id": "instruction",
+      "section": "п. 8.28",
+      "page": 33,
+      "text": "Глава 9. Виды документов Организации и особенности их\nподготовки",
+      "context": "",
+      "multiplicity": 1
+    },
+    {
+      "document_id": "instruction",
+      "section": "п. 9.17",
+      "page": 41,
+      "text": "Глава 10. Подготовка, согласование и утверждение проектов\nдокументов",
+      "context": "",
+      "multiplicity": 1
+    },
+    {
+      "document_id": "instruction",
+      "section": "п. 10.15",
+      "page": 45,
+      "text": "Глава 11. Формирование дел, архивное хранение и уничтожение\nдокументов",
+      "context": "",
+      "multiplicity": 1
+    },
+    {
+      "document_id": "instruction",
+      "section": "п. 11.24",
+      "page": 49,
+      "text": "Глава 12. Ответственность, актуализация и заключительные\nположения",
+      "context": "",
+      "multiplicity": 1
+    }
+  ],
+  "docker_only": [],
+  "confirmed_with_fresh_pypdf_6_21_2_index": true,
+  "explanation": "Разница — 12 отдельных заголовков глав, исключённых обновлённым parser; все 343 содержательных фрагмента совпадают полностью. Обновление pypdf не изменило текст фрагментов."
+}
