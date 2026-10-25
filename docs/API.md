@@ -28,10 +28,15 @@
 `Template = {id,title,description,document_type,version,source_document_id?,fields:Field[],hints:string[],tags:string[]}`.
 `Field = {key,label,type:text|textarea|date|boolean|people,required,placeholder?,help?,default?}`; people value `[{role,department,position,name}]`.
 `POST /drafts {template_id,values?:object}` → Draft.
-`Draft = {id,template_id,title,values,missing_fields:string[],validation:[{field,severity: error|warning,message,rule?}],preview:string,readiness:number,updated_at,route?:object}`.
-`GET /drafts` → `{drafts:Draft[]}`; `GET /drafts/{id}` → Draft; `PATCH /drafts/{id} {values:object}` → Draft.
-`POST /drafts/{id}/assist {message}` → `{draft:Draft,answer:string,updated_fields:string[]}`. Natural language field extraction with local model, fallback prompts explicitly.
+`Draft = {id,template_id,title,values,missing_fields:string[],validation:[{field,severity: error|warning,message,rule?}],preview:string,readiness:number,revision:number,confirmed_fields:string[],unconfirmed_fields:string[],field_evidence:object,updated_at,route?:object}`. `readiness` — заполненность, не разрешение на подпись.
+`GET /drafts` → `{drafts:Draft[]}`; `GET /drafts/{id}` → Draft; `PATCH /drafts/{id} {values:object,expected_revision?:number,confirm_fields?:string[]}` → Draft. Сервер атомарно проверяет ревизию при записи; несовпадение даёт 409, клиент должен загрузить свежий проект. Ручные изменения подтверждаются; неизменённые поля можно явно подтвердить через `confirm_fields`.
+`POST /drafts/{id}/suggest {message}` → `{values,evidence,conflicts,base_revision,mode}`. Не меняет проект. Для применения выбранных значений используется PATCH с `expected_revision: base_revision`. Цитаты оснований берутся из сообщения пользователя. `mode: explicit|hybrid` различает программное извлечение и участие LLM.
+`POST /drafts/{id}/assist {message}` → `{draft:Draft,answer:string,updated_fields:string[]}`. Совместимый API автоматического заполнения: изменения сохраняются, но остаются неподтверждёнными. Основной интерфейс использует `/suggest`.
 `POST /drafts/{id}/export` → DOCX file; may export incomplete draft with explicit field placeholders, response headers X-Draft-Incomplete; never fabricate signature/date/registration number.
+
+`X-Draft-Incomplete: true` возвращается также для заполненного проекта с неподтверждёнными сведениями. При ограничении частоты сервер возвращает 429 и `Retry-After`; занятые слоты модели не должны порождать неограниченную очередь запросов.
+
+Ответ `/chat` дополнительно содержит `answer_kind` и `answer_label`: интерфейс различает точную норму, выбранные моделью проверенные цитаты и поисковые выдержки. Идентификаторы ссылок присваивает сервер. Статус `grounded` означает наличие проверенных оснований в текущем ответе, а не юридическую экспертизу.
 
 ## Визирование и проверка
 

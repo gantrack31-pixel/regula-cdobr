@@ -103,7 +103,8 @@ def _specs() -> list[dict]:
                     field("department", "Реализующее проект подразделение", help="В творительном падеже; можно указать ответственных и участвующих."), field("people", "Состав комитета", "people", help="Председатель, заместитель, секретарь и члены; неиспользуемые роли можно убрать. " + PEOPLE_HELP),
                     field("it_project", "Комитет решает вопросы ИТ или информационных систем", "boolean", False, default=False),
                     field("cancel_previous", "Отменить прежнее распоряжение", "boolean", False, default=False), field("previous_date", "Дата прежнего распоряжения", "date", False),
-                    field("previous_number", "Номер прежнего распоряжения", required=False), field("previous_title", "Название прежнего распоряжения", required=False), *CONTROL],
+                    field("previous_number", "Номер прежнего распоряжения", required=False), field("previous_title", "Название прежнего распоряжения", required=False), *CONTROL,
+                    {**SIGNER, 'help': 'Для карточки проекта. В DOCX сохраняется служебный блок ЭП; печатная подпись не добавляется.'}],
          "hints": ["Наименования проектов и единственное/множественное число согласуются автоматически в трех местах.", "В этом модуле имеется только служебный блок ЭП; он не заменяется печатной подписью."]},
         {"id": "workgroup", "title": "Создание рабочей группы", "document_type": "directive", "filename_part": "о_создании_рабочеи",
          "description": "Временная группа с конкретной задачей, результатом, сроком и событием прекращения деятельности.", "tags": ["рабочая группа", "задача", "срок", "распоряжение"],
@@ -359,7 +360,9 @@ class TemplateService:
         def finding(key: str, message: str, severity: str = "warning", rule: str = GUIDANCE):
             validation.append({"field": key, "severity": severity, "message": message, "rule": rule})
 
-        for key in required:
+        for key in fields:
+            if key not in required:
+                continue
             value = v.get(key)
             empty = value is None or isinstance(value, str) and not value.strip() or isinstance(value, list) and not value
             if empty:
@@ -464,7 +467,12 @@ class TemplateService:
                 cells = row.findall("w:tc", NS)
                 left = str(person.get("department" if tid == "records_officers" else "role") or "«НЕ ЗАПОЛНЕНО»")
                 keys = ["position", "name"] if tid == "records_officers" else ["position", "department", "name"]
-                right = ", ".join(str(person.get(k) or f"«НЕ ЗАПОЛНЕНО: {k}»") for k in keys)
+                department = str(person.get('department') or '').strip().casefold()
+                position = str(person.get('position') or '').strip().casefold()
+                if department and department in position and 'department' in keys:
+                    keys.remove('department')
+                labels = {'position': 'должность', 'department': 'подразделение', 'name': 'ФИО'}
+                right = ", ".join(str(person.get(k) or f"«НЕ ЗАПОЛНЕНО: {labels[k]}»") for k in keys)
                 for cell, text in zip(cells, [left, right]):
                     paragraphs = cell.findall("w:p", NS)
                     _paragraph_text(paragraphs[0], text)
@@ -493,8 +501,8 @@ class TemplateService:
         # The case supplies an empty emblem zone, not an authorized emblem image.
         # Preserve this source zone; flag its status in the UI rather than inventing a seal.
         if tid == "is_launch":
-            put(7, "О вводе в эксплуатацию " + val("system_name"))
-            put(8, f"На основании {val('readiness_document')}, содержащего решение о готовности к вводу в эксплуатацию компонента информационной системы {val('system_name')} (далее - «{val('short_name')}»), {'разработанного' if _true(v.get('developed_new')) else 'измененного'} в соответствии с {val('development_document')},")
+            put(7, "О вводе в эксплуатацию «" + val("system_name").strip('«»') + "»")
+            put(8, f"На основании {val('readiness_document')}, содержащего решение о готовности к вводу в эксплуатацию компонента информационной системы «{val('system_name').strip('«»')}» (далее - «{val('short_name')}»), {'разработанного' if _true(v.get('developed_new')) else 'измененного'} в соответствии с {val('development_document')},")
             put(10, f"1. Ввести «{val('short_name')}» в эксплуатацию с {val('launch_date')}.")
             put(11, "2. " + val("customer"))
             put(12, f"обеспечить применение «{val('short_name')}» по следующему назначению: {val('purpose')}.")
@@ -517,7 +525,7 @@ class TemplateService:
             put(8, f"В связи с {val('basis')},")
             source = f" от {val('transfer_source')}" if v.get("transfer_source") else ""
             deadline = f" не позднее {val('deadline')}" if v.get("deadline") or not _true(v.get("deadline_in_basis")) else ""
-            put(10, f"1. {val('transferor')} сдать, а {val('transferee')} принять дела и имущество {val('property')}{source}{deadline} в порядке, предусмотренном Положением о порядке приема и передачи дел и имущества при назначении на должность и освобождении от должности руководителей структурных подразделений Организации.")
+            put(10, f"1. {val('transferor')} сдать, а {val('transferee')} принять дела и имущество ({val('property')}){source}{deadline} в порядке, предусмотренном Положением о порядке приема и передачи дел и имущества при назначении на должность и освобождении от должности руководителей структурных подразделений Организации.")
             put(11, f"2. Назначить {val('representative')} представителем Организации при приеме и передаче дел и имущества.")
             control(12, 3)
             signature, notes_start = 13, 14
@@ -573,9 +581,29 @@ class TemplateService:
             control(16, 6)
             signature, notes_start = 17, 18
         if signature is not None:
-            cells = blocks[signature].findall("w:tr", NS)[0].findall("w:tc", NS)
+            signature_row = blocks[signature].findall("w:tr", NS)[0]
+            cells = signature_row.findall("w:tc", NS)
             _paragraph_text(cells[1].find("w:p", NS), "")
             _paragraph_text(cells[2].find("w:p", NS), val("signer"))
+            # Keep the signer's job title, name and following EP zone together.
+            # A split row can leave just "Организации" on the next page.
+            trpr = signature_row.find('w:trPr', NS)
+            if trpr is None:
+                trpr = etree.Element(f'{{{W}}}trPr')
+                signature_row.insert(0, trpr)
+            if trpr.find('w:cantSplit', NS) is None:
+                etree.SubElement(trpr, f'{{{W}}}cantSplit')
+            preceding = blocks[signature - 1]
+            keep_paragraphs = signature_row.findall('.//w:p', NS)
+            if preceding.tag == f'{{{W}}}p' and preceding.getparent() is body:
+                keep_paragraphs.append(preceding)
+            for paragraph in keep_paragraphs:
+                props = paragraph.find('w:pPr', NS)
+                if props is None:
+                    props = etree.Element(f'{{{W}}}pPr')
+                    paragraph.insert(0, props)
+                if props.find('w:keepNext', NS) is None:
+                    etree.SubElement(props, f'{{{W}}}keepNext')
         for block in blocks[notes_start:]:
             if block.tag != f"{{{W}}}sectPr" and block.getparent() is body:
                 body.remove(block)

@@ -209,10 +209,17 @@ class AppDB:
             db.execute('DELETE FROM conversations WHERE id=?', (conversation_id,))
         return True
 
-    def save_draft(self, draft, user_id):
+    def save_draft(self, draft, user_id, expected_revision=None):
         with self.connect() as db:
+            # Compare and write in one SQLite transaction, including across workers.
+            db.execute('BEGIN IMMEDIATE')
+            if expected_revision is not None:
+                row = db.execute('SELECT data FROM drafts WHERE id=? AND user_id=?', (draft['id'], user_id)).fetchone()
+                if not row or json.loads(row['data']).get('revision', 0) != expected_revision:
+                    return False
             db.execute('INSERT INTO drafts VALUES(?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET title=excluded.title,data=excluded.data,updated_at=excluded.updated_at',
                        (draft['id'], user_id, draft['template_id'], draft['title'], json.dumps(draft, ensure_ascii=False), now()))
+        return True
 
     def draft(self, draft_id, user_id):
         with self.connect() as db:

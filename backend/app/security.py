@@ -161,7 +161,8 @@ class RateLimiter:
             while entries and entries[0] < current - window:
                 entries.popleft()
             if len(entries) >= limit:
-                raise HTTPException(429, 'Слишком много запросов. Подождите минуту.')
+                retry = max(1, int(window - (current - entries[0])) + 1)
+                raise HTTPException(429, 'Слишком много запросов. Подождите минуту.', headers={'Retry-After': str(retry)})
             entries.append(current)
             if len(self.entries) > 10000:
                 for old_key in list(self.entries):

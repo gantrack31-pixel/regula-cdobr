@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 
 import httpx
 from nltk.stem.snowball import RussianStemmer
+from .field_evidence import extract_explicit, sanitize_model_fields, field_supported, people_from_message, names, sentences, norm
 
 
 _STEMMER = RussianStemmer()
@@ -28,6 +29,8 @@ _BOOLEAN_CUES = {
     'operational_docs_confirmed': r'эксплуатационн\w*\s+документац',
     'developed_new': r'разработ|впервые|модерниз',
     'deadline_in_basis': r'срок|дат',
+    'multiple_processes': r'процесс',
+    'multiple_projects': r'проект',
 }
 
 
@@ -51,6 +54,8 @@ def _grounded_text(value: str, evidence: str) -> bool:
         if min(len(a), len(b)) <= 1 or not re.fullmatch(r'[а-я]+', a + b):
             return False
         if _STEMMER.stem(a) == _STEMMER.stem(b):
+            return True
+        if all(re.fullmatch(r'систем(?:а|ы|е|у|ой|ою|ам|ами|ах)?', word) for word in (a, b)):
             return True
         # Snowball treats e.g. Иванов/Иванова differently. Match their explicit
         # surname stem without weakening the checks on initials or numeric facts.
@@ -120,6 +125,7 @@ def validate_field_updates(message: str, fields: list[dict], values: dict) -> di
             if not isinstance(value, list) or not 1 <= len(value) <= 100:
                 continue
             rows = []
+            original_people = {norm(p['name']): p for p in people_from_message(message)[0]}
             for person in value:
                 if not isinstance(person, dict) or not person or any(k not in _PERSON_KEYS or not isinstance(v, str) or len(v) > 500 for k, v in person.items()):
                     continue
@@ -127,10 +133,15 @@ def validate_field_updates(message: str, fields: list[dict], values: dict) -> di
                     continue
                 if not person.get('name', '').strip():
                     continue
-                rows.append({k: v.strip() for k, v in person.items()})
+                # A surname's gender is an identity fact, not a grammatical edit.
+                original = original_people.get(norm(person['name']))
+                if original:
+                    rows.append(original)
             if rows:
                 clean[key] = rows
         elif isinstance(value, str) and len(value) <= 6000 and _grounded_text(value, message):
+            if key == 'signer' and norm(value) not in {norm(n) for n in names(message)}:
+                continue
             clean[key] = value.strip()
     # A common failure of constrained generation is copying the generic request
     # into every slot. Such output is a clarification case, not completed data.
@@ -230,7 +241,9 @@ class LLMClient:
             with httpx.Client(timeout=httpx.Timeout(self.timeout, connect=3), trust_env=False) as client:
                 response = client.post(self.base_url + "/api/embed", json={
                     "model": self.embedding_model, "input": texts, "truncate": True,
-                    "keep_alive": "5m"})
+                    "keep_alive": "5m", "options": {
+                        "num_ctx": 2048,
+                        **({"num_gpu": int(os.environ['EMBEDDING_NUM_GPU'])} if os.getenv('EMBEDDING_NUM_GPU') else {})}})
                 response.raise_for_status()
                 vectors = response.json()["embeddings"]
             if len(vectors) != len(texts) or any(not v for v in vectors):
@@ -298,3 +311,36 @@ class LLMClient:
             value = _slot_value(fields_by_key[key], record["value"], evidence)
             clean.update(validate_field_updates(evidence, [fields_by_key[key]], {key: value}))
         return validate_field_updates(message, fields, clean)
+
+    def propose_fields(self, message: str, fields: list[dict], current_values: dict) -> dict:
+        """Extract explicit spans first; use the model only for unresolved cues.
+
+        The returned proposal is not persisted here. Each value has a real user
+        quote, and source-specific validators run again at the API boundary.
+        """
+        explicit = extract_explicit(message, fields)
+        clauses = sentences(message)
+        unresolved = [f for f in fields if f['key'] not in explicit['values']
+                      and f['key'] not in explicit['conflicts']
+                      and f['type'] in {'text', 'textarea'}
+                      and any(field_supported(f['key'], s, f['label']) for s in clauses)]
+        records = {}
+        used_model = False
+        if unresolved:
+            try:
+                candidates = self.extract_fields(message, unresolved, {})
+                used_model = True
+                for field in unresolved:
+                    value = candidates.get(field['key'])
+                    if not isinstance(value, str):
+                        continue
+                    scopes = [s for s in clauses if field_supported(field['key'], s, field['label']) and _grounded_text(value, s)]
+                    if scopes:
+                        records[field['key']] = {'value': value, 'evidence': min(scopes, key=len)}
+            except (LLMUnavailable, ValueError, TypeError):
+                pass  # Explicit facts remain usable even when Ollama is offline.
+        result = sanitize_model_fields(message, fields, records)
+        result['values'] = validate_field_updates(message, fields, result['values'])
+        result['evidence'] = {key: quote for key, quote in result['evidence'].items() if key in result['values']}
+        result['mode'] = 'hybrid' if used_model else 'explicit'
+        return result

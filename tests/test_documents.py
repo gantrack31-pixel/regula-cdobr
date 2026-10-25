@@ -48,6 +48,15 @@ def package(path):
         return {name: z.read(name) for name in z.namelist()}
 
 
+def test_full_job_title_does_not_duplicate_department(service, tmp_path):
+    values = filled(service, 'workgroup')
+    values['people'][0].update(position='начальник отдела архива', department='отдела архива', name='М. И. Волков')
+    output = service.export('workgroup', values, tmp_path / 'roster.docx')
+    text = '\n'.join(cell.text for table in Document(output).tables for row in table.rows for cell in row.cells)
+    assert 'начальник отдела архива, М. И. Волков' in text
+    assert 'начальник отдела архива, отдела архива' not in text
+
+
 @pytest.mark.parametrize("tid", IDS)
 def test_export_all_original_modules_preserves_package_and_service_zones(service, tmp_path, tid):
     template = service.get_template(tid)

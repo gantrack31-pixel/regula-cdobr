@@ -23,9 +23,12 @@ from starlette.concurrency import run_in_threadpool
 from .db import AppDB, now, uid
 from .security import MAX_UPLOAD, RateLimiter, validate_upload, BodyLimitMiddleware, request_body_limit
 from .llm import LLMClient, explicit_field_updates, validate_field_updates
+from .field_evidence import extract_explicit, sanitize_model_fields
 from .knowledge import KnowledgeStore
 from .templates import TemplateService
 from .rules import build_route, review_document, review_text
+
+propose_field_values = LLMClient.propose_fields
 
 ROOT = Path(__file__).resolve().parents[2]
 # A small .env reader: literal values only, no shell evaluation or interpolation.
@@ -418,6 +421,8 @@ def template(tid: str, request: Request, user=Depends(current_user)):
 
 class ValuesInput(BaseModel):
     values: dict[str, Any] = Field(default_factory=dict)
+    expected_revision: int | None = Field(default=None, ge=0)
+    confirm_fields: list[str] = Field(default_factory=list, max_length=100)
 
     @field_validator('values')
     @classmethod
@@ -431,7 +436,7 @@ class DraftInput(ValuesInput):
     template_id: str = Field(max_length=100)
 
 
-def assemble_draft(tid, values, request, user, draft_id=None):
+def assemble_draft(tid, values, request, user, draft_id=None, previous=None, confirmed=None, evidence=None):
     template = authorized_template(tid, request, user)
     valid_keys = {f['key'] for f in template['fields']}
     values = {k: v for k, v in values.items() if k in valid_keys}
@@ -464,7 +469,16 @@ def assemble_draft(tid, values, request, user, draft_id=None):
                                   'temporary_group': True if tid in {'workgroup', 'committee'} else None})
     draft = {'id': draft_id or uid(), 'template_id': tid, 'title': template['title'], 'values': values,
              **result, 'updated_at': now(), 'template_version': template.get('version', '1')}
-    request.app.state.db.save_draft(draft, user['id'])
+    previous = previous or {}
+    retained = {k for k in previous.get('confirmed_fields', []) if values.get(k) == previous.get('values', {}).get(k)}
+    draft['confirmed_fields'] = sorted((retained | set(confirmed or [])) & valid_keys)
+    draft['field_evidence'] = {k: v for k, v in previous.get('field_evidence', {}).items()
+                               if values.get(k) == previous.get('values', {}).get(k)}
+    draft['field_evidence'].update(evidence or {})
+    draft['unconfirmed_fields'] = [k for k, v in values.items() if v not in (None, '', []) and k not in draft['confirmed_fields']]
+    draft['revision'] = previous.get('revision', 0) + 1
+    if not request.app.state.db.save_draft(draft, user['id'], previous.get('revision', 0) if draft_id else None):
+        raise HTTPException(409, 'Проект изменён в другой вкладке. Откройте свежую версию и повторите изменения.')
     return draft
 
 
@@ -476,7 +490,7 @@ def drafts(request: Request, user=Depends(current_user)):
 
 @app.post('/api/drafts')
 def create_draft(data: DraftInput, request: Request, user=Depends(current_user)):
-    result = assemble_draft(data.template_id, data.values, request, user)
+    result = assemble_draft(data.template_id, data.values, request, user, confirmed=list(data.values))
     request.app.state.db.audit(user['username'], 'draft.create', result['id'], {'template_id': data.template_id})
     return result
 
@@ -497,34 +511,55 @@ def get_draft(did: str, request: Request, user=Depends(current_user)):
 @app.patch('/api/drafts/{did}')
 def update_draft(did: str, data: ValuesInput, request: Request, user=Depends(current_user)):
     previous = owned_draft(did, request, user)
-    return assemble_draft(previous['template_id'], {**previous['values'], **data.values}, request, user, did)
+    if data.expected_revision is not None and data.expected_revision != previous.get('revision', 0):
+        raise HTTPException(409, 'Проект изменён в другой вкладке. Откройте свежую версию и повторите изменения.')
+    return assemble_draft(previous['template_id'], {**previous['values'], **data.values}, request, user, did,
+                          previous=previous, confirmed=[*data.values, *data.confirm_fields])
 
 
 class AssistInput(BaseModel):
     message: str = Field(min_length=1, max_length=6000)
 
 
-@app.post('/api/drafts/{did}/assist')
-def assist_draft(did: str, data: AssistInput, request: Request, user=Depends(current_user)):
+def field_proposal(did, data, request, user):
     rate.check('assist:' + user['id'], 20)
     previous = owned_draft(did, request, user)
     template = authorized_template(previous['template_id'], request, user)
-    updates = {}
+    proposal = extract_explicit(data.message, template['fields'])
     if not model_slots.acquire(blocking=False):
         raise HTTPException(429, 'Модель обрабатывает другие запросы. Повторите через несколько секунд.')
     try:
-        updates = request.app.state.llm.extract_fields(data.message, template['fields'], previous['values']) or {}
+        proposal = propose_field_values(request.app.state.llm, data.message, template['fields'], previous['values'])
     except Exception:
-        logger.info('Field extraction unavailable; trying explicit field=value input')
+        logger.info('Field extraction unavailable; retaining explicit facts')
     finally:
         model_slots.release()
-    # Independently verify source support before saving; do not repair malformed
-    # model JSON or persist serialized fields as ordinary text.
-    updates = validate_field_updates(data.message, template['fields'], updates)
-    if not updates:
-        updates = explicit_field_updates(data.message, template['fields'])
+    updates = validate_field_updates(data.message, template['fields'], proposal['values'])
+    # Even a broken provider cannot create unsupported fields at this boundary.
+    records = {k: {'value': v, 'evidence': proposal['evidence'].get(k, '')} for k, v in updates.items()}
+    checked = sanitize_model_fields(data.message, template['fields'], records)
+    updates = validate_field_updates(data.message, template['fields'], checked['values'])
+    changes = {k: v for k, v in updates.items() if previous['values'].get(k) != v or k not in previous.get('confirmed_fields', [])}
+    return previous, template, {'values': changes, 'evidence': {k: checked['evidence'].get(k, '') for k in changes},
+        'conflicts': checked['conflicts'], 'base_revision': previous.get('revision', 0), 'mode': proposal.get('mode', 'explicit')}
+
+
+@app.post('/api/drafts/{did}/suggest')
+def suggest_draft(did: str, data: AssistInput, request: Request, user=Depends(current_user)):
+    _, _, proposal = field_proposal(did, data, request, user)
+    request.app.state.db.audit(user['username'], 'draft.suggest', did, {'proposed_fields': list(proposal['values'])})
+    return proposal
+
+
+@app.post('/api/drafts/{did}/assist')
+def assist_draft(did: str, data: AssistInput, request: Request, user=Depends(current_user)):
+    # Compatibility endpoint: automatic changes remain explicitly unconfirmed.
+    previous, template, proposal = field_proposal(did, data, request, user)
+    updates = proposal['values']
     fields = {f['key']: f for f in template['fields']}
-    draft = assemble_draft(previous['template_id'], {**previous['values'], **updates}, request, user, did)
+    previous = {**previous, 'confirmed_fields': [k for k in previous.get('confirmed_fields', []) if k not in updates]}
+    draft = assemble_draft(previous['template_id'], {**previous['values'], **updates}, request, user, did,
+                           previous=previous, evidence=proposal['evidence'])
     missing_labels = [fields[k]['label'] for k in draft['missing_fields'] if k in fields]
     answer = ('Заполнил: ' + ', '.join(fields[k]['label'] for k in updates) + '. Проверьте внесённые значения. ') if updates else 'Не удалось однозначно извлечь поля. Заполните форму или укажите «название поля: значение». '
     answer += ('Ещё нужно уточнить: ' + '; '.join(missing_labels[:3]) + '.') if missing_labels else 'Обязательные поля заполнены. Проверьте предупреждения и предпросмотр перед скачиванием.'
@@ -540,7 +575,7 @@ def export_draft(did: str, request: Request, user=Depends(current_user)):
         raise HTTPException(409, 'Шаблон обновлён. Сохраните черновик, чтобы проверить его по актуальной редакции.')
     path = RUNTIME / 'exports' / (uid() + '.docx')
     request.app.state.templates.export(draft['template_id'], draft['values'], path)
-    incomplete = bool(draft['missing_fields']) or any(v.get('severity') == 'error' for v in draft.get('validation', []))
+    incomplete = bool(draft['missing_fields']) or bool(draft.get('unconfirmed_fields', [])) or any(v.get('severity') == 'error' for v in draft.get('validation', []))
     request.app.state.db.audit(user['username'], 'draft.export', did, {'incomplete': incomplete, 'template_version': draft['template_version']})
     return FileResponse(path, media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
                         filename='Проект — ' + draft['title'][:100] + '.docx', headers={'X-Draft-Incomplete': str(incomplete).lower()})

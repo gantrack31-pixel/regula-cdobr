@@ -12,10 +12,11 @@ def test_assist_rejects_model_serialized_tail_and_invented_date(client, monkeypa
         'message': 'Подготовить регламент до 20 ноября 2026 года.'})
     assert response.status_code == 200, response.text
     result = response.json()
-    assert result['updated_fields'] == []
+    assert set(result['updated_fields']) == {'deadline', 'action'}
+    assert result['draft']['values']['action'] == 'Подготовить регламент'
     assert result['draft']['values']['topic'] == 'сохранённый предмет'
-    assert 'deadline' not in result['draft']['values']
-    assert 'Не удалось однозначно' in result['answer']
+    assert result['draft']['values']['deadline'] == '2026-11-20'
+    assert 'signer' not in result['draft']['values']
 
 
 def test_assist_offline_fallback_normalizes_only_explicit_date(client, monkeypatch):

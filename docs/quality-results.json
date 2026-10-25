@@ -1,0 +1,680 @@
+{
+  "date": "2026-10-25",
+  "scope": "Manual source-grounded assessment of authored diagnostic scenarios; not a model accuracy estimate or an independent benchmark.",
+  "model": "qwen3:8b",
+  "embedding_model": "qwen3-embedding:0.6b",
+  "python_tests_passed": 113,
+  "docker_http_checks_passed": 14,
+  "frontend_build": "passed",
+  "known_dependency_vulnerabilities": 0,
+  "visual_qa": {
+    "modules": 7,
+    "pages": 10,
+    "renderer": "Microsoft Word + Poppler"
+  },
+  "baseline": {
+    "questions_passed": 19,
+    "questions_total": 30,
+    "draft_scenarios_passed": 5,
+    "draft_scenarios_total": 10,
+    "correct_fields": 47,
+    "supported_expected_fields": 59,
+    "correction": "d07 originally counted an unavailable signer field: denominator 60 corrected to 59."
+  },
+  "sets": [
+    {
+      "name": "regression",
+      "assessment": "manual comparison with the provided sources and facts in the input",
+      "questions": [
+        {
+          "id": "q01",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 553,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 5.6"
+          ]
+        },
+        {
+          "id": "q02",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 532,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 5.6"
+          ]
+        },
+        {
+          "id": "q03",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 532,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 6.4"
+          ]
+        },
+        {
+          "id": "q04",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 523,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 6.4"
+          ]
+        },
+        {
+          "id": "q05",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 568,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 8.16"
+          ]
+        },
+        {
+          "id": "q06",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 527,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 8.16"
+          ]
+        },
+        {
+          "id": "q07",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 561,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 10.3"
+          ]
+        },
+        {
+          "id": "q08",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 551,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 10.3"
+          ]
+        },
+        {
+          "id": "q09",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 557,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 10.15"
+          ]
+        },
+        {
+          "id": "q10",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 631,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 10.6"
+          ]
+        },
+        {
+          "id": "q11",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 586,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 10.9"
+          ]
+        },
+        {
+          "id": "q12",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_selection",
+          "generation_calls": 1,
+          "elapsed_ms_including_rate_limit_wait": 3064,
+          "retry_delays_seconds": [],
+          "sources": [
+            "approval-matrix:ВНУТРЕННИЕ ДОКУМЕНТЫ · строка 2"
+          ]
+        },
+        {
+          "id": "q13",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_selection",
+          "generation_calls": 1,
+          "elapsed_ms_including_rate_limit_wait": 2924,
+          "retry_delays_seconds": [],
+          "sources": [
+            "approval-matrix:ВНУТРЕННИЕ ДОКУМЕНТЫ · строка 6"
+          ]
+        },
+        {
+          "id": "q14",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_selection",
+          "generation_calls": 1,
+          "elapsed_ms_including_rate_limit_wait": 3361,
+          "retry_delays_seconds": [],
+          "sources": [
+            "approval-matrix:ВНЕШНИЕ ДОКУМЕНТЫ · строка 2"
+          ]
+        },
+        {
+          "id": "q15",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 553,
+          "retry_delays_seconds": [],
+          "sources": [
+            "module-guidance:п. 1.3"
+          ]
+        },
+        {
+          "id": "q16",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 562,
+          "retry_delays_seconds": [],
+          "sources": [
+            "module-guidance:п. 1.3"
+          ]
+        },
+        {
+          "id": "q17",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 537,
+          "retry_delays_seconds": [],
+          "sources": [
+            "module-guidance:п. 2.1",
+            "module-guidance:п. 5.2"
+          ]
+        },
+        {
+          "id": "q18",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 649,
+          "retry_delays_seconds": [],
+          "sources": [
+            "module-guidance:п. 3.1"
+          ]
+        },
+        {
+          "id": "q19",
+          "passed": true,
+          "status": "insufficient",
+          "answer_kind": "insufficient",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 591,
+          "retry_delays_seconds": [],
+          "sources": []
+        },
+        {
+          "id": "q20",
+          "passed": true,
+          "status": "insufficient",
+          "answer_kind": "insufficient",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 533,
+          "retry_delays_seconds": [],
+          "sources": []
+        },
+        {
+          "id": "q21",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 42631,
+          "retry_delays_seconds": [
+            42
+          ],
+          "sources": [
+            "instruction:п. 5.6"
+          ]
+        },
+        {
+          "id": "q22",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 656,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 5.6"
+          ]
+        },
+        {
+          "id": "q23",
+          "passed": true,
+          "status": "insufficient",
+          "answer_kind": "insufficient",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 225,
+          "retry_delays_seconds": [],
+          "sources": []
+        },
+        {
+          "id": "q24",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 521,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 5.6"
+          ]
+        },
+        {
+          "id": "q25",
+          "passed": true,
+          "status": "insufficient",
+          "answer_kind": "insufficient",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 602,
+          "retry_delays_seconds": [],
+          "sources": []
+        },
+        {
+          "id": "m1a",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 545,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 5.6"
+          ]
+        },
+        {
+          "id": "m1b",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 585,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 5.6"
+          ]
+        },
+        {
+          "id": "m2a",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 583,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 10.3"
+          ]
+        },
+        {
+          "id": "m2b",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 629,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 10.3"
+          ]
+        },
+        {
+          "id": "m2c",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 575,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 8.16"
+          ]
+        }
+      ],
+      "drafts": [
+        {
+          "id": "d01",
+          "template": "workgroup",
+          "passed": true,
+          "generation_calls": 0,
+          "elapsed_ms": 44,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "d02",
+          "template": "is_launch",
+          "passed": true,
+          "generation_calls": 0,
+          "elapsed_ms": 37,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "d03",
+          "template": "records_officers",
+          "passed": true,
+          "generation_calls": 1,
+          "elapsed_ms": 1173,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "d04",
+          "template": "handover",
+          "passed": true,
+          "generation_calls": 1,
+          "elapsed_ms": 985,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "d05",
+          "template": "local_act",
+          "passed": true,
+          "generation_calls": 1,
+          "elapsed_ms": 824,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "d06",
+          "template": "audit",
+          "passed": true,
+          "generation_calls": 1,
+          "elapsed_ms": 942,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "d07",
+          "template": "committee",
+          "passed": true,
+          "generation_calls": 0,
+          "elapsed_ms": 31,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "d08",
+          "template": "workgroup",
+          "passed": true,
+          "generation_calls": 0,
+          "elapsed_ms": 25,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "d09",
+          "template": "workgroup",
+          "passed": true,
+          "generation_calls": 0,
+          "elapsed_ms": 27,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "d10",
+          "template": "handover",
+          "passed": true,
+          "generation_calls": 0,
+          "elapsed_ms": 28,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        }
+      ]
+    },
+    {
+      "name": "additional_variants",
+      "assessment": "manual comparison with the provided sources and facts in the input",
+      "questions": [
+        {
+          "id": "h01",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 567,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 5.6"
+          ]
+        },
+        {
+          "id": "h02",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 539,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 8.16"
+          ]
+        },
+        {
+          "id": "h03",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 612,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 6.4"
+          ]
+        },
+        {
+          "id": "h04",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 520,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 10.3"
+          ]
+        },
+        {
+          "id": "h05",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_selection",
+          "generation_calls": 1,
+          "elapsed_ms_including_rate_limit_wait": 3310,
+          "retry_delays_seconds": [],
+          "sources": [
+            "approval-matrix:ВНУТРЕННИЕ ДОКУМЕНТЫ · строка 2"
+          ]
+        },
+        {
+          "id": "h06",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_selection",
+          "generation_calls": 1,
+          "elapsed_ms_including_rate_limit_wait": 2786,
+          "retry_delays_seconds": [],
+          "sources": [
+            "approval-matrix:ВНУТРЕННИЕ ДОКУМЕНТЫ · строка 6"
+          ]
+        },
+        {
+          "id": "h07",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 536,
+          "retry_delays_seconds": [],
+          "sources": [
+            "module-guidance:п. 1.3"
+          ]
+        },
+        {
+          "id": "h08",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_selection",
+          "generation_calls": 1,
+          "elapsed_ms_including_rate_limit_wait": 2669,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 8.22.2"
+          ],
+          "assessment_note": "Initial expectation named only the reverse of the last sheet. Source 8.22.2 also permits below signature on the front or a separate sheet. Answer correctly included all source alternatives."
+        },
+        {
+          "id": "h09",
+          "passed": true,
+          "status": "insufficient",
+          "answer_kind": "insufficient",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 605,
+          "retry_delays_seconds": [],
+          "sources": []
+        },
+        {
+          "id": "h10",
+          "passed": true,
+          "status": "grounded",
+          "answer_kind": "source_rule",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 550,
+          "retry_delays_seconds": [],
+          "sources": [
+            "instruction:п. 10.9"
+          ]
+        },
+        {
+          "id": "h11",
+          "passed": true,
+          "status": "insufficient",
+          "answer_kind": "insufficient",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 549,
+          "retry_delays_seconds": [],
+          "sources": []
+        },
+        {
+          "id": "h12",
+          "passed": true,
+          "status": "insufficient",
+          "answer_kind": "insufficient",
+          "generation_calls": 0,
+          "elapsed_ms_including_rate_limit_wait": 562,
+          "retry_delays_seconds": [],
+          "sources": []
+        }
+      ],
+      "drafts": [
+        {
+          "id": "u01",
+          "template": "workgroup",
+          "passed": true,
+          "generation_calls": 0,
+          "elapsed_ms": 47,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "u02",
+          "template": "handover",
+          "passed": true,
+          "generation_calls": 0,
+          "elapsed_ms": 31,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "u03",
+          "template": "local_act",
+          "passed": true,
+          "generation_calls": 1,
+          "elapsed_ms": 932,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "u04",
+          "template": "workgroup",
+          "passed": true,
+          "generation_calls": 0,
+          "elapsed_ms": 25,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "u05",
+          "template": "committee",
+          "passed": true,
+          "generation_calls": 0,
+          "elapsed_ms": 30,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "u06",
+          "template": "is_launch",
+          "passed": true,
+          "generation_calls": 0,
+          "elapsed_ms": 33,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "u07",
+          "template": "workgroup",
+          "passed": true,
+          "generation_calls": 1,
+          "elapsed_ms": 906,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        },
+        {
+          "id": "u08",
+          "template": "workgroup",
+          "passed": true,
+          "generation_calls": 0,
+          "elapsed_ms": 25,
+          "assessment_note": "Reported facts preserved; no invented required facts. Missing and automatic unconfirmed fields remain visible; does not mean a complete signable document."
+        }
+      ]
+    }
+  ]
+}

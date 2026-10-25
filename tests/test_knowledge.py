@@ -175,7 +175,7 @@ def test_model_unknown_citation_falls_back(corpus):
     old = corpus.llm
     corpus.llm = BrokenModel()
     try:
-        result = corpus.answer("В какой срок регистрируют входящий документ?")
+        result = corpus.answer("Где располагается виза на бумажном документе?")
         assert result["mode"] == "extractive"
         assert "выдуманное" not in result["answer"]
         assert result["citations"]
@@ -191,16 +191,16 @@ def test_model_json_grounding_and_prompt_boundaries(corpus):
 
         def chat_json(self, messages, schema):
             context = json.loads(messages[-1]["content"])
-            assert context["question"].startswith("В какой срок")
+            assert context["question"].startswith("Где располагается")
             assert "недоверенными" in messages[0]["content"]
             citation = context["evidence"][0]
-            assert citation["section"] == "п. 5.6"
-            return {"answer": "Входящие документы регистрируются в день поступления; для позднего поступления предусмотрено исключение [1].", "status": "grounded", "citation_ids": [citation["id"]], "suggested_questions": []}
+            assert "quote" in citation
+            return {"status": "grounded", "claims": [{"source_id": citation["id"], "quote": citation["quote"]}], "question": ""}
 
     old = corpus.llm
     corpus.llm = GroundedModel()
     try:
-        result = corpus.answer("В какой срок регистрируют входящий документ?")
+        result = corpus.answer("Где располагается виза на бумажном документе?")
         assert result["mode"] == "llm"
         assert len(result["citations"]) == 1
         assert "не подтверждение юридической силы" in result["trace"]["version_policy"]
@@ -242,10 +242,11 @@ def test_cross_page_clause_includes_last_two_roles(corpus):
 def test_answer_keeps_evidence_for_cross_page_continuation(corpus):
     citations = [c for c in corpus.search('В какой последовательности визируют документ?') if c['section'] == 'п. 10.6']
     first = next(c for c in citations if c['page'] == 42)
-    response = {'answer': 'После остальных визируют ДОУ и куратор [1].', 'status': 'grounded', 'citation_ids': [first['id']]}
-    result = corpus._validate_answer(response, citations)
+    response = {'status': 'grounded', 'claims': [{'source_id': first['id'], 'quote': first['quote']}], 'question': ''}
+    result = corpus._validate_claims(response, citations)
     assert {c['page'] for c in result['citations']} == {42, 43}
-    assert '[1] [2]' in result['answer']
+    assert '[1]' in result['answer'] and '[2]' in result['answer']
+    assert 'Департамента ДОУ' in result['answer']
 
 
 def test_pronoun_followup_uses_recent_user_topic(corpus):
@@ -262,23 +263,23 @@ def test_registration_question_does_not_substitute_project_rules_before_effectiv
     assert result['citations'] == []
 
 
-def test_known_chunk_brackets_are_normalized_unknown_rejected(corpus):
+def test_citation_numbers_are_created_by_application(corpus):
     citation = corpus.search("В какой срок регистрируют входящий документ?")[0]
-    response = {"answer": f"В день поступления [{citation['id']}].", "status": "grounded", "citation_ids": [citation["id"]]}
-    validated = corpus._validate_answer(response, [citation])
-    assert validated["answer"] == "В день поступления [1]."
-    response["answer"] = "В день поступления [made-up-id]."
-    assert corpus._validate_answer(response, [citation]) is None
+    response = {'status': 'grounded', 'claims': [{'source_id': citation['id'], 'quote': citation['quote']}], 'question': ''}
+    validated = corpus._validate_claims(response, [citation])
+    assert validated['answer'].endswith('[1]')
+    response['claims'][0]['source_id'] = 'made-up-id'
+    assert corpus._validate_claims(response, [citation]) is None
 
 
 def test_explicit_matrix_roles_cannot_silently_disappear(corpus):
     citation = corpus.search("Кто визирует приказ о вводе информационной системы?")[0]
-    assert citation["table_data"]["Юридическое подразделение"] == "Да"
-    assert citation["table_data"]["Департамент ДОУ"] == "Да"
-    incomplete = {"answer": "Нужны ИТ и ИБ [1].", "status": "grounded", "citation_ids": [citation["id"]]}
-    assert corpus._validate_answer(incomplete, [citation], "Кто визирует приказ?") is None
-    complete = {**incomplete, "answer": "Нужны юридическое подразделение, ДОУ, ИТ и ИБ [1]."}
-    assert corpus._validate_answer(complete, [citation], "Кто визирует приказ?") is not None
+    response = {'status': 'grounded', 'claims': [{'source_id': citation['id'], 'quote': citation['quote']}], 'question': ''}
+    validated = corpus._validate_claims(response, [citation])
+    for role in ('Юридическое подразделение', 'Департамент ДОУ', 'информационной безопасности', 'информационных технологий'):
+        assert role in validated['answer']
+    response['claims'][0]['quote'] = 'Выдуманное подразделение обязательно.'
+    assert corpus._validate_claims(response, [citation]) is None
 
 
 def test_version_metadata_preserves_its_own_title(store, tmp_path):
